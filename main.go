@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/wrhansen/build-orchestrator-in-go/manager"
 	"github.com/wrhansen/build-orchestrator-in-go/node"
+	"github.com/wrhansen/build-orchestrator-in-go/procinfo"
 	"github.com/wrhansen/build-orchestrator-in-go/task"
 	"github.com/wrhansen/build-orchestrator-in-go/worker"
 )
@@ -65,4 +66,7 @@ func main() {
 	}
 
 	fmt.Printf("node: %v\n", n)
+
+	// Practicing with procinfo rewrites...not sure exactly what I need?
+	_, _ = procinfo.GetLoadAvg()
 }
