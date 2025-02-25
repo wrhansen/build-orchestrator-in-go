@@ -141,9 +141,9 @@ func main() {
 
 		t.ContainerId = result.ContainerId
 		fmt.Printf("task %s is running in container %s\n", t.ID, t.ContainerId)
-		fmt.Printf("Sleepy time")
 	}
 
+	fmt.Printf("Sleepy time")
 	time.Sleep(time.Second * 30)
 
 	for i := 0; i < 2; i++ {
