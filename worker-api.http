@@ -24,3 +24,8 @@ POST {{url}}/tasks
 
 # Delete a Worker Task
 DELETE {{url}}/tasks/266592cd-960d-4091-981c-8c25c44b1018
+
+###
+
+# Get worker stats
+GET {{url}}/stats
