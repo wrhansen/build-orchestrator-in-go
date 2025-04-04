@@ -1,12 +1,14 @@
-@url=http://localhost:5555
+@workerUrl=http://localhost:5556
+@managerUrl=http://localhost:5555
+
 
 # Get Worker Tasks
-GET {{url}}/tasks
+GET {{workerUrl}}/tasks
 
 ###
 
 # Start a Worker Task
-POST {{url}}/tasks
+POST {{workerUrl}}/tasks
 
 {
     "ID": "266592cd-960d-4091-981c-8c25c44b1018",
@@ -23,15 +25,14 @@ POST {{url}}/tasks
 ###
 
 # Delete a Worker Task
-DELETE {{url}}/tasks/266592cd-960d-4091-981c-8c25c44b1018
+DELETE {{workerUrl}}/tasks/266592cd-960d-4091-981c-8c25c44b1018
 
 ###
 
 # Get worker stats
-GET {{url}}/stats
+GET {{workerUrl}}/stats
 
 ########## MANAGER API ##########
-@managerUrl=http://localhost:5556
 
 # Get Manager Tasks
 GET {{managerUrl}}/tasks
@@ -46,7 +47,7 @@ POST {{managerUrl}}/tasks
     "Task": {
         "State": 1,
         "ID": "bb1d59ef-9fc1-4e4b-a44d-db571eeed203",
-        "Name": "test-chapter-9.1",
+        "Name": "test-chapter-10.1",
         "Image": "timboring/echo-server:latest",
         "ExposedPorts": {
             "7777/tcp": {}

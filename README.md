@@ -15,3 +15,13 @@ Had to run `docker run -p 7777:7777 --name echo --rm --platform linux/amd64 timb
 to get this running on macos. The `--platform` arg was necessary to stop the error
 about the host platform not maching the platform of the image.
 
+
+## Chapter 10
+
+To run a worker and manager from the command line enter:
+
+```sh
+$ CUBE_WORKER_HOST=localhost CUBE_WORKER_PORT=5556 CUBE_MANAGER_HOST=localhost CUBE_MANAGER_PORT=5555 go run main.go
+```
+
+* We're not running worker.CollectStats() anymore?

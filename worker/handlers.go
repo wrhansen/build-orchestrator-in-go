@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/wrhansen/build-orchestrator-in-go/stats"
 	"github.com/wrhansen/build-orchestrator-in-go/task"
 )
 
@@ -69,6 +70,13 @@ func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 
 func (a *Api) GetStatsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	if a.Worker.Stats != nil {
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(*a.Worker.Stats)
+		return
+	}
+
 	w.WriteHeader(200)
-	json.NewEncoder(w).Encode(a.Worker.Stats)
+	stats := stats.GetStats()
+	json.NewEncoder(w).Encode(stats)
 }
