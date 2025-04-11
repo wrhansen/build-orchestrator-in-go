@@ -42,6 +42,29 @@ func (a *Api) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(a.Worker.GetTasks())
 }
 
+func (a *Api) InspectTaskHandler(w http.ResponseWriter, r *http.Request) {
+	taskID := chi.URLParam(r, "taskID")
+	if taskID == "" {
+		log.Printf("No taskID passed in request.\n")
+		w.WriteHeader(400)
+	}
+
+	tID, _ := uuid.Parse(taskID)
+	t, err := a.Worker.Db.Get(tID.String())
+	if err != nil {
+		log.Printf("No task with ID %v found", tID)
+		w.WriteHeader(404)
+		return
+	}
+
+	resp := a.Worker.InspectTask(t.(task.Task))
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(resp.Container)
+
+}
+
 func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskID := chi.URLParam(r, "taskID")
 	if taskID == "" {
@@ -50,8 +73,8 @@ func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tID, _ := uuid.Parse(taskID)
-	_, ok := a.Worker.Db[tID]
-	if !ok {
+	taskToStop, err := a.Worker.Db.Get(tID.String())
+	if err != nil {
 		log.Printf("No task with ID %v found", tID)
 		w.WriteHeader(404)
 	}
@@ -59,12 +82,12 @@ func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	// retrieve a **copy** of task from the database
 	// to avoid state transition errors when
 	// popped off the worker queue
-	taskToStop := a.Worker.Db[tID]
-	taskCopy := *taskToStop
+	// taskToStop := a.Worker.Db[tID]
+	taskCopy := *taskToStop.(*task.Task)
 	taskCopy.State = task.Completed
 	a.Worker.AddTask(taskCopy)
 
-	log.Printf("Added task %v to stop container %v\n", taskToStop.ID, taskToStop.ContainerId)
+	log.Printf("Added task %v to stop container %v\n", taskCopy.ID.String(), taskCopy.ContainerId)
 	w.WriteHeader(204)
 }
 
