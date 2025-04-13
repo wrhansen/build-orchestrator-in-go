@@ -42,13 +42,13 @@ func (n *Node) GetStats() (*stats.Stats, error) {
 	resp, err = utils.HTTPWithRetry(http.Get, url)
 	if err != nil {
 		msg := fmt.Sprintf("Unable to connect to %v. Permanent failure.\n", n.Api)
-		log.Println(msg)
+		log.Printf("[node] %s\n", msg)
 		return nil, errors.New(msg)
 	}
 
 	if resp.StatusCode != 200 {
 		msg := fmt.Sprintf("Error retrieving stats from %v: %v", n.Api, err)
-		log.Println(msg)
+		log.Printf("[node] %s\n", msg)
 		return nil, errors.New(msg)
 	}
 
@@ -58,7 +58,7 @@ func (n *Node) GetStats() (*stats.Stats, error) {
 	err = json.Unmarshal(body, &stats)
 	if err != nil {
 		msg := fmt.Sprintf("error decoding messages while getting stats for node %s", n.Name)
-		log.Println(msg)
+		log.Printf("[node] %s\n", msg)
 		return nil, errors.New(msg)
 	}
 

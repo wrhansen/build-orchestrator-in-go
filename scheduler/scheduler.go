@@ -97,7 +97,7 @@ func (e *Epvm) Score(t task.Task, nodes []*node.Node) map[string]float64 {
 	for _, node := range nodes {
 		cpuUsage, err := calculateCpuUsage(node)
 		if err != nil {
-			log.Printf("error calculating CPU usage %s, skipping: %v\n", node.Name, err)
+			log.Printf("[scheduler] error calculating CPU usage %s, skipping: %v\n", node.Name, err)
 			continue
 		}
 		cpuLoad := calculateLoad(*cpuUsage, math.Pow(2, 0.8))

@@ -118,7 +118,7 @@ func NewTaskStore(file string, mode os.FileMode, bucket string) (*TaskStore, err
 
 	err = t.CreateBucket()
 	if err != nil {
-		log.Printf("bucket already exists, will use it instead of creating new one")
+		log.Printf("[store] bucket already exists, will use it instead of creating new one")
 	}
 	return &t, nil
 }
@@ -233,7 +233,7 @@ func NewEventStore(file string, mode os.FileMode, bucket string) (*EventStore, e
 
 	err = e.CreateBucket()
 	if err != nil {
-		log.Printf("bucket already exists, will use it instead of creating new one")
+		log.Printf("[store] bucket already exists, will use it instead of creating new one")
 	}
 	return &e, nil
 }

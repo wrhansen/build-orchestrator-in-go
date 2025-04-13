@@ -20,7 +20,7 @@ func (a *Api) StartTaskHandler(w http.ResponseWriter, r *http.Request) {
 	err := d.Decode(&te)
 	if err != nil {
 		msg := fmt.Sprintf("Error unmarshalling body: %v\n", err)
-		log.Printf(msg)
+		log.Printf("[worker.handlers] %s", msg)
 		w.WriteHeader(400)
 		e := ErrResponse{
 			HTTPStatusCode: 400,
@@ -31,7 +31,7 @@ func (a *Api) StartTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a.Worker.AddTask(te.Task)
-	log.Printf("Added task %v\n", te.Task.ID)
+	log.Printf("[worker.handlers] Added task %v\n", te.Task.ID)
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(te.Task)
 }
@@ -45,14 +45,14 @@ func (a *Api) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 func (a *Api) InspectTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskID := chi.URLParam(r, "taskID")
 	if taskID == "" {
-		log.Printf("No taskID passed in request.\n")
+		log.Printf("[worker.handlers] No taskID passed in request.\n")
 		w.WriteHeader(400)
 	}
 
 	tID, _ := uuid.Parse(taskID)
 	t, err := a.Worker.Db.Get(tID.String())
 	if err != nil {
-		log.Printf("No task with ID %v found", tID)
+		log.Printf("[worker.handlers] No task with ID %v found", tID)
 		w.WriteHeader(404)
 		return
 	}
@@ -68,14 +68,14 @@ func (a *Api) InspectTaskHandler(w http.ResponseWriter, r *http.Request) {
 func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskID := chi.URLParam(r, "taskID")
 	if taskID == "" {
-		log.Printf("No taskID passed in request.\n")
+		log.Printf("[worker.handlers] No taskID passed in request.\n")
 		w.WriteHeader(400)
 	}
 
 	tID, _ := uuid.Parse(taskID)
 	taskToStop, err := a.Worker.Db.Get(tID.String())
 	if err != nil {
-		log.Printf("No task with ID %v found", tID)
+		log.Printf("[worker.handlers] No task with ID %v found", tID)
 		w.WriteHeader(404)
 	}
 
@@ -87,7 +87,7 @@ func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskCopy.State = task.Completed
 	a.Worker.AddTask(taskCopy)
 
-	log.Printf("Added task %v to stop container %v\n", taskCopy.ID.String(), taskCopy.ContainerId)
+	log.Printf("[worker.handlers] Added task %v to stop container %v\n", taskCopy.ID.String(), taskCopy.ContainerId)
 	w.WriteHeader(204)
 }
 
