@@ -311,6 +311,20 @@ func (m *Manager) restartTask(t *task.Task) {
 	log.Printf("[manager] %#v\n", t)
 }
 
+// TODO: is this method really necessary since the scheduler is calling node.GetStats() itself?
+func (m *Manager) UpdateNodeStats() {
+	for {
+		for _, node := range m.WorkerNodes {
+			log.Printf("[manager] Collecting stats for node %v", node.Name)
+			_, err := node.GetStats()
+			if err != nil {
+				log.Printf("[manager] error updating node stats: %v", err)
+			}
+		}
+		time.Sleep(15 * time.Second)
+	}
+}
+
 func (m *Manager) DoHealthChecks() {
 	for {
 		log.Println("[manager] Performing task health check")
