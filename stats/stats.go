@@ -2,9 +2,16 @@ package stats
 
 import (
 	"log"
+	"os"
 
 	"github.com/c9s/goprocinfo/linux"
 )
+
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stdout, "[stats] ", log.Ldate|log.Ltime)
+}
 
 type Stats struct {
 	MemStats  *linux.MemInfo
@@ -66,7 +73,7 @@ func GetStats() *Stats {
 func GetMemoryInfo() *linux.MemInfo {
 	memstats, err := linux.ReadMemInfo("/proc/meminfo")
 	if err != nil {
-		log.Printf("[stats] Error reading from /proc/meminfo")
+		logger.Printf("Error reading from /proc/meminfo")
 		return &linux.MemInfo{}
 	}
 	return memstats
@@ -76,7 +83,7 @@ func GetMemoryInfo() *linux.MemInfo {
 func GetDiskInfo() *linux.Disk {
 	diskstats, err := linux.ReadDisk("/")
 	if err != nil {
-		log.Printf("[stats] Error reading from /")
+		logger.Printf("Error reading from /")
 		return &linux.Disk{}
 	}
 	return diskstats
@@ -86,7 +93,7 @@ func GetDiskInfo() *linux.Disk {
 func GetCpuStats() *linux.CPUStat {
 	stats, err := linux.ReadStat("/proc/stat")
 	if err != nil {
-		log.Printf("[stats] Error reading from /proc/stat")
+		logger.Printf("Error reading from /proc/stat")
 		return &linux.CPUStat{}
 	}
 
@@ -97,7 +104,7 @@ func GetCpuStats() *linux.CPUStat {
 func GetLoadAvg() *linux.LoadAvg {
 	loadavg, err := linux.ReadLoadAvg("/proc/loadavg")
 	if err != nil {
-		log.Printf("[stats] Error reading from /proc/loadavg")
+		logger.Printf("Error reading from /proc/loadavg")
 		return &linux.LoadAvg{}
 	}
 	return loadavg

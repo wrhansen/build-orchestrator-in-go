@@ -7,10 +7,17 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/wrhansen/build-orchestrator-in-go/stats"
 	"github.com/wrhansen/build-orchestrator-in-go/utils"
 )
+
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stdout, "[node] ", log.Ldate|log.Ltime)
+}
 
 type Node struct {
 	Name            string
@@ -42,13 +49,13 @@ func (n *Node) GetStats() (*stats.Stats, error) {
 	resp, err = utils.HTTPWithRetry(http.Get, url)
 	if err != nil {
 		msg := fmt.Sprintf("Unable to connect to %v. Permanent failure.\n", n.Api)
-		log.Printf("[node] %s\n", msg)
+		logger.Printf("%s\n", msg)
 		return nil, errors.New(msg)
 	}
 
 	if resp.StatusCode != 200 {
 		msg := fmt.Sprintf("Error retrieving stats from %v: %v", n.Api, err)
-		log.Printf("[node] %s\n", msg)
+		logger.Printf("%s\n", msg)
 		return nil, errors.New(msg)
 	}
 
@@ -58,7 +65,7 @@ func (n *Node) GetStats() (*stats.Stats, error) {
 	err = json.Unmarshal(body, &stats)
 	if err != nil {
 		msg := fmt.Sprintf("error decoding messages while getting stats for node %s", n.Name)
-		log.Printf("[node] %s\n", msg)
+		logger.Printf("%s\n", msg)
 		return nil, errors.New(msg)
 	}
 

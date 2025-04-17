@@ -10,8 +10,13 @@ import (
 	"github.com/wrhansen/build-orchestrator-in-go/task"
 )
 
-// interface{} in go is the empty interface, which can hold any type.
+var logger *log.Logger
 
+func init() {
+	logger = log.New(os.Stdout, "[store] ", log.Ldate|log.Ltime)
+}
+
+// interface{} in go is the empty interface, which can hold any type.
 type Store interface {
 	Put(key string, value interface{}) error
 	Get(key string) (interface{}, error)
@@ -118,7 +123,7 @@ func NewTaskStore(file string, mode os.FileMode, bucket string) (*TaskStore, err
 
 	err = t.CreateBucket()
 	if err != nil {
-		log.Printf("[store] bucket already exists, will use it instead of creating new one")
+		logger.Printf("bucket already exists, will use it instead of creating new one")
 	}
 	return &t, nil
 }
@@ -233,7 +238,7 @@ func NewEventStore(file string, mode os.FileMode, bucket string) (*EventStore, e
 
 	err = e.CreateBucket()
 	if err != nil {
-		log.Printf("[store] bucket already exists, will use it instead of creating new one")
+		logger.Printf("bucket already exists, will use it instead of creating new one")
 	}
 	return &e, nil
 }

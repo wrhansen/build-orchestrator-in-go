@@ -3,11 +3,18 @@ package scheduler
 import (
 	"log"
 	"math"
+	"os"
 	"time"
 
 	"github.com/wrhansen/build-orchestrator-in-go/node"
 	"github.com/wrhansen/build-orchestrator-in-go/task"
 )
+
+var logger *log.Logger
+
+func init() {
+	logger = log.New(os.Stdout, "[scheduler] ", log.Ldate|log.Ltime)
+}
 
 type Scheduler interface {
 	SelectCandidateNodes(t task.Task, nodes []*node.Node) []*node.Node
@@ -97,7 +104,7 @@ func (e *Epvm) Score(t task.Task, nodes []*node.Node) map[string]float64 {
 	for _, node := range nodes {
 		cpuUsage, err := calculateCpuUsage(node)
 		if err != nil {
-			log.Printf("[scheduler] error calculating CPU usage %s, skipping: %v\n", node.Name, err)
+			logger.Printf("error calculating CPU usage %s, skipping: %v\n", node.Name, err)
 			continue
 		}
 		cpuLoad := calculateLoad(*cpuUsage, math.Pow(2, 0.8))

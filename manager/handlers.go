@@ -5,12 +5,19 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/wrhansen/build-orchestrator-in-go/task"
 )
+
+var handlerLogger *log.Logger
+
+func init() {
+	handlerLogger = log.New(os.Stdout, "[manager.handlers] ", log.Ldate|log.Ltime)
+}
 
 func (a *Api) StartTaskHandler(w http.ResponseWriter, r *http.Request) {
 	d := json.NewDecoder(r.Body)
@@ -20,7 +27,7 @@ func (a *Api) StartTaskHandler(w http.ResponseWriter, r *http.Request) {
 	err := d.Decode(&te)
 	if err != nil {
 		msg := fmt.Sprintf("Error unmarshalling body: %v\n", err)
-		log.Printf("[manager.handlers] %s", msg)
+		handlerLogger.Print(msg)
 		w.WriteHeader(400)
 		e := ErrResponse{
 			HTTPStatusCode: 400,
@@ -31,7 +38,7 @@ func (a *Api) StartTaskHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	a.Manager.AddTask(te)
-	log.Printf("[manager.handlers] Added task %v\n", te.Task.ID)
+	handlerLogger.Printf("Added task %v\n", te.Task.ID)
 	w.WriteHeader(201)
 	json.NewEncoder(w).Encode(te.Task)
 }
@@ -45,14 +52,14 @@ func (a *Api) GetTasksHandler(w http.ResponseWriter, r *http.Request) {
 func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	taskID := chi.URLParam(r, "taskID")
 	if taskID == "" {
-		log.Printf("[manager.handlers] No taskID passed in request.\n")
+		handlerLogger.Printf("No taskID passed in request.\n")
 		w.WriteHeader(400)
 	}
 
 	tID, _ := uuid.Parse(taskID)
 	taskToStop, err := a.Manager.TaskDb.Get(tID.String())
 	if err != nil {
-		log.Printf("[manager.handlers] No task with ID %v found", tID)
+		handlerLogger.Printf("No task with ID %v found", tID)
 		w.WriteHeader(404)
 	}
 
@@ -67,7 +74,7 @@ func (a *Api) StopTaskHandler(w http.ResponseWriter, r *http.Request) {
 	te.Task = *taskCopy
 	a.Manager.AddTask(te)
 
-	log.Printf("[manager.handlers] Added task %v to stop container %v\n", te.ID, taskCopy.ID)
+	handlerLogger.Printf("Added task %v to stop container %v\n", te.ID, taskCopy.ID)
 	w.WriteHeader(204)
 }
 
